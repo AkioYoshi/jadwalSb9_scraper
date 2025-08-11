@@ -8,17 +8,40 @@ import puppeteer from "puppeteer";
   });
 
   const page = await browser.newPage();
-  await page.goto("http://snapyb9.byethost11.com/data_android_sb9.php?api_key=api-key-xyz-122490&mode=data", {
-    waitUntil: "networkidle0",
-    timeout: 60000
-  });
+  await page.goto(
+    "http://snapyb9.byethost11.com/data_android_sb9.php?api_key=api-key-xyz-122490&mode=data",
+    {
+      waitUntil: "networkidle0",
+      timeout: 60000,
+    }
+  );
 
-  // Ambil isi halaman setelah JavaScript selesai
-  const content = await page.content();
+  try {
+    // Cek apakah elemen <pre> ada
+    const preElement = await page.$("pre");
 
-  // Simpan hasilnya ke output/data.json (bisa parse jadi JSON kalau perlu)
-  fs.mkdirSync("output", { recursive: true });
-  fs.writeFileSync("output/data.json", JSON.stringify({ html: content }, null, 2));
+    if (preElement) {
+      const textContent = await page.evaluate(el => el.innerText, preElement);
+
+      fs.mkdirSync("output", { recursive: true });
+      fs.writeFileSync(
+        "output/data.json",
+        JSON.stringify({ data: textContent }, null, 2)
+      );
+    } else {
+      fs.mkdirSync("output", { recursive: true });
+      fs.writeFileSync(
+        "output/data.json",
+        JSON.stringify({ error: "<pre> element not found" }, null, 2)
+      );
+    }
+  } catch (error) {
+    fs.mkdirSync("output", { recursive: true });
+    fs.writeFileSync(
+      "output/data.json",
+      JSON.stringify({ error: error.message }, null, 2)
+    );
+  }
 
   await browser.close();
 })();
