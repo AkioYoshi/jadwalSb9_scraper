@@ -2,8 +2,8 @@ name: Scheduled Web Scraper
 
 on:
   schedule:
-    - cron: '3 0 * * *'   # Jam 00:03 UTC (pagi)
-    - cron: '3 12 * * *'  # Jam 12:03 UTC (siang)
+    - cron: '0 16 * * *'   # Jam 16:00 UTC/23.00 UTC+7
+    - cron: '0 4 * * *'  # Jam 04:00 UTC/11.00 UTC+7
   workflow_dispatch:      # Bisa dijalankan manual juga
 
 jobs:
