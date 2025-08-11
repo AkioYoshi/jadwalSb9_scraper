@@ -1,0 +1,33 @@
+name: Scheduled Web Scraper
+
+on:
+  schedule:
+    - cron: '3 0 * * *'   # Jam 00:03 UTC (pagi)
+    - cron: '3 12 * * *'  # Jam 12:03 UTC (siang)
+  workflow_dispatch:      # Bisa dijalankan manual juga
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install puppeteer
+
+      - name: Jalankan scraper
+        run: node scrape.js
+
+      - name: Commit dan push hasil scraping
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add output/data.json
+          git commit -m "Update scraped data"
+          git push
